@@ -1,4 +1,22 @@
 #!/usr/bin/make -f
 
+export PYBUILD_NAME=sphinx-autobuild
+
 %:
-	dh $@
+	dh ${@} --buildsystem=pybuild --with python3
+
+override_dh_auto_install:
+	dh_auto_install
+
+	mkdir -p debian/python3-$(PYBUILD_NAME)/usr/share/doc/python3-$(PYBUILD_NAME)
+	cp README.md debian/python3-$(PYBUILD_NAME)/usr/share/doc/python3-$(PYBUILD_NAME)/README
+
+override_dh_fixperms:
+	dh_fixperms
+	find -name '__init__.py' -exec chmod 0644 {} +
+
+override_dh_auto_test:
+	# disabled
+
+override_dh_installchangelogs:
+	dh_installchangelogs NEWS.rst
